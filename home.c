@@ -6,6 +6,7 @@ typedef struct Node {
     struct Node *right;
     struct Node *left;
     int value;
+    int height;
 } Node;
 
 typedef struct {
@@ -13,6 +14,48 @@ typedef struct {
 } AVLTree;
 
 AVLTree *tree = NULL;
+
+int max(int a, int b) {
+    return (a > b)? a : b;
+}
+
+int height(Node *N) {
+    if (N == NULL)
+        return 0;
+    return N->height;
+}
+
+int getBalance(Node *N) {
+    if (N == NULL)
+        return 0;
+    return height(N->left) - height(N->right);
+}
+
+Node* leftRotate(Node* unbalancedNode) {
+    Node* rightChild = unbalancedNode->right;
+    Node* temp = rightChild->left;
+
+    rightChild->left = unbalancedNode;
+    unbalancedNode->right = temp;
+
+    unbalancedNode->height = max(height(unbalancedNode->left), height(unbalancedNode->right)) + 1;
+    rightChild->height = max(height(rightChild->left), height(rightChild->right)) + 1;
+
+    return rightChild;
+}
+
+Node* rightRotate(Node* unbalancedNode) {
+    Node* leftChild = unbalancedNode->left;
+    Node* temp = leftChild->right;
+
+    leftChild->right = unbalancedNode;
+    unbalancedNode->left = temp;
+
+    unbalancedNode->height = max(height(unbalancedNode->left), height(unbalancedNode->right)) + 1;
+    leftChild->height = max(height(leftChild->left), height(leftChild->right)) + 1;
+
+    return leftChild;
+}
 
 void printTree(Node *next) {
     if(next != NULL) {
@@ -22,6 +65,7 @@ void printTree(Node *next) {
     }
 }
 
+// TODO: Update insert to utilize rotate functions.
 void insertNode(int value) {
     Node *aux = tree->root;
     Node *new = NULL;
